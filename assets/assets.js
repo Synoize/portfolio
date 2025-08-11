@@ -85,7 +85,7 @@ export const workData = [
         title: 'Doctor Appointment Booking',
         description: 'Near Dr. - Web App',
         bgImage: '/work-1.png',
-        link: "https://github.com/Synoize/NearDr-Appointment-Booking"
+        link: "https://github.com/Synoize/Near-Dr-Instant-Appointment-Booking"
     },
     {
         title: 'Document Access Management',
@@ -118,10 +118,10 @@ export const workData = [
         link: "https://github.com/Synoize/gichat"
     },
     {
-        title: 'Text-to-Image-Generator',
+        title: 'Text to Image Generator',
         description: 'S-Ai - Mobile App',
         bgImage: '/work-7.png',
-        link: "https://github.com/Synoize/gichat"
+        link: "https://github.com/Synoize/S-Ai-Text-to-Image-Generator"
     },
 ]
 
