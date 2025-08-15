@@ -1,4 +1,4 @@
-import user_image from './user-image.png';
+import user_image from './user-image.jpg';
 import code_icon from './code-icon.png';
 import code_icon_dark from './code-icon-dark.png';
 import edu_icon from './edu-icon.png';
@@ -17,7 +17,7 @@ import right_arrow_white from './right-arrow-white.png';
 import logo from './logo.png';
 import mail_icon from './mail_icon.png';
 import mail_icon_dark from './mail_icon_dark.png';
-import profile_img from './profile-img.png';
+import profile_img from './profile-img.jpg';
 import download_icon from './download-icon.png';
 import hand_icon from './hand-icon.png';
 import header_bg_color from './header-bg-color.png';
@@ -158,5 +158,13 @@ export const clientData = [
         projectImage: '/vsm-technologies-solution-project.png',
         icon: './vsm-technologies-solution-icon.png',
         link: "https://client-vsm-technologies-sloutions.netlify.app/"
+    },
+    {
+        name: "Game UI",
+        title: "Game UI",
+        description: "Game UI",
+        projectImage: './game-ui.png',
+        icon: './game-icon.png',
+        link: "https://www.figma.com/design/WKe0KFO2wbgSK4Abp0nRxm/Untitled?node-id=39-2&t=H4NjP4gPQ4K1z7wr-0"
     },
 ];
