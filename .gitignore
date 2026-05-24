@@ -1,0 +1,16 @@
+.env
+.env.local
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Unused/Optional files (can be deleted)
+package.json
+tailwind.config.js
