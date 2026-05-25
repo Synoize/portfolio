@@ -1,4 +1,9 @@
-<?php $skills = getSkills(); ?>
+<?php
+$skills = getSkills();
+$about = aboutSettings();
+$content = contentSettings();
+$resumeUrl = resumeDownloadUrl();
+?>
 
 
 <!-- About Section -->
@@ -10,11 +15,11 @@
         <div class="text-center mb-20">
 
             <p class="uppercase tracking-[5px] text-xs md:text-sm text-gray-400 mb-4">
-                Introduction
+                <?php echo sanitize($about['about_eyebrow']); ?>
             </p>
 
             <h2 class="text-3xl md:text-6xl font-playfair text-gray-800 mb-6">
-                About Me
+                <?php echo sanitize($about['about_title']); ?>
             </h2>
 
             <div class="w-24 h-[2px] bg-primary mx-auto"></div>
@@ -29,16 +34,18 @@
 
                 <!-- Main Image -->
                 <div class="overflow-hidden rounded-[32px] shadow-2xl group">
-                    <img
-                        src="<?php echo IMAGES_URL; ?>info-img.jpg"
-                        alt="Shivam Singh"
-                        class="w-full min-h-[400px] max-h-[600px] object-cover group-hover:scale-105 transition duration-700">
+                    <?php if (!empty($about['about_image_url'])): ?>
+                        <img
+                            src="<?php echo sanitize($about['about_image_url']); ?>"
+                            alt="<?php echo sanitize($content['site_owner_name']); ?>"
+                            class="w-full min-h-[400px] max-h-[600px] object-cover group-hover:scale-105 transition duration-700">
+                    <?php endif; ?>
                 </div>
 
                 <!-- Floating Experience Card -->
                 <div class="absolute -bottom-8 -right-8 bg-white px-12 py-6 border rounded-3xl shadow-xl border border-gray-100">
                     <h4 class="text-4xl font-bold text-primary mb-1">
-                        1+
+                        <?php echo sanitize($about['about_experience_years']); ?>
                     </h4>
 
                     <p class="text-gray-500 text-sm">
@@ -53,41 +60,11 @@
             <!-- Intro -->
             <div class="mt-4 md:mb-4">
 
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    I'm <span class="font-semibold text-primary">Shivam Singh</span>,
-                    a passionate Full Stack Web Developer, Android Developer,
-                    AI Automation Engineer, and Cybersecurity Enthusiast from Bihar, India.
-                    I specialize in creating modern, scalable, and performance-driven
-                    applications that solve real-world business problems.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    With over 2 years of professional experience, I have worked with
-                    multiple startups and companies, helping them build responsive websites,
-                    AI-powered systems, automation tools, and secure backend infrastructures
-                    using modern technologies and industry best practices.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    My expertise includes Full Stack Development, REST APIs,
-                    Database Architecture, Authentication Systems, Cloud Integrations,
-                    and AI workflow automation. I enjoy transforming ideas into
-                    impactful digital products with clean UI/UX and optimized performance.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    Beyond development, I actively explore cybersecurity,
-                    ethical hacking, penetration testing, and network security.
-                    I continuously learn secure coding practices and work with tools
-                    like Kali Linux, Nmap, Burp Suite, and OWASP standards
-                    to build safer applications.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 md:mb-4">
-                    I strongly believe in continuous learning, innovation,
-                    and creating technology that combines design, intelligence,
-                    and functionality to deliver meaningful user experiences.
-                </p>
+                <?php foreach (settingParagraphs($about['about_body']) as $paragraph): ?>
+                    <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
+                        <?php echo sanitize($paragraph); ?>
+                    </p>
+                <?php endforeach; ?>
 
             </div>
 
@@ -113,7 +90,7 @@
 
                     <div class="bg-white border border-gray-100 rounded-3xl p-6 text-center shadow-sm hover:shadow-lg transition duration-300">
                         <h4 class="text-3xl font-bold text-primary mb-2">
-                            30+
+                            <?php echo sanitize($about['about_happy_clients']); ?>
                         </h4>
 
                         <p class="text-gray-500 text-sm">
@@ -123,7 +100,7 @@
 
                     <div class="col-span-2 md:col-span-1 bg-white border border-gray-100 rounded-3xl p-6 text-center shadow-sm hover:shadow-lg transition duration-300">
                         <h4 class="text-3xl font-bold text-primary mb-2">
-                            8+
+                            <?php echo sanitize($about['about_technologies']); ?>
                         </h4>
 
                         <p class="text-gray-500 text-sm">
@@ -140,7 +117,7 @@
                     <a href="<?php echo appUrl('/contact'); ?>"
                         class="group inline-flex items-center gap-2 bg-primary hover:bg-opacity-90 text-white text-xs md:text-sm px-8 py-4 rounded-full font-medium transition duration-300 shadow-lg hover:shadow-xl">
 
-                        Let's Work Together
+                        <?php echo sanitize($content['primary_cta_label']); ?>
 
                         <i data-lucide="arrow-right"
                             class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
@@ -149,7 +126,7 @@
                     </a>
 
                     <!-- Download CV -->
-                    <a href="#" download="resume.pdf"
+                    <a href="<?php echo sanitize($resumeUrl ?: '#'); ?>" <?php echo $resumeUrl ? 'download="resume.pdf"' : ''; ?>
                         class="inline-flex items-center gap-2 border border-gray-300 hover:border-gray-800 hover:bg-gray-800 text-gray-700 text-xs md:text-sm hover:text-white px-8 py-4 rounded-full font-medium transition duration-300">
 
                         Download Resume
@@ -197,9 +174,11 @@
 </section>
 
 <script>
-    const username = "synoize";
+    const username = "<?php echo sanitize($content['github_username']); ?>";
 
     async function loadProjectsCount() {
+
+        if (!username) return;
 
         try {
 

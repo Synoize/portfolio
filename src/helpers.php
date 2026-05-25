@@ -16,27 +16,6 @@ function assetSubdir() {
     return defined('ASSET_SUBDIR') ? ASSET_SUBDIR : 'uploads';
 }
 
-// Return top-level subfolders inside the project `assets/` directory
-function assetNamespaces() {
-    $root = dirname(__DIR__);
-    $assetsDir = $root . '/assets';
-    $names = [];
-
-    if (!is_dir($assetsDir)) {
-        return $names;
-    }
-
-    foreach (scandir($assetsDir) as $f) {
-        if ($f === '.' || $f === '..') continue;
-        $path = $assetsDir . '/' . $f;
-        if (is_dir($path)) {
-            $names[] = $f;
-        }
-    }
-
-    return $names;
-}
-
 function stripBasePath($path) {
     $base = defined('APP_BASE_PATH') ? APP_BASE_PATH : '';
     $path = '/' . ltrim((string) $path, '/');
@@ -76,7 +55,71 @@ function socialUrl($name) {
 }
 
 function resumeUrl() {
+    $uploadedResume = getSiteSetting('resume_url');
+    if ($uploadedResume !== '') {
+        return $uploadedResume;
+    }
+
     return defined('RESUME_URL') ? RESUME_URL : '';
+}
+
+function resumeDownloadUrl() {
+    return resumeUrl() !== '' ? appUrl('/resume-download') : '#';
+}
+
+function localPublicFileFromUrl($url) {
+    $url = (string) $url;
+    if ($url === '') {
+        return null;
+    }
+
+    $path = parse_url($url, PHP_URL_PATH);
+    if (!$path) {
+        return null;
+    }
+
+    $base = defined('BASE_URL') ? BASE_URL : '/';
+    if ($base !== '/' && str_starts_with($path, $base)) {
+        $path = substr($path, strlen($base));
+    } else {
+        $path = ltrim($path, '/');
+    }
+
+    $path = str_replace('\\', '/', $path);
+    if (!str_starts_with($path, 'public/')) {
+        return null;
+    }
+
+    $relative = substr($path, strlen('public/'));
+    $relative = ltrim($relative, '/');
+    if ($relative === '' || str_contains($relative, '..')) {
+        return null;
+    }
+
+    $file = PUBLIC_PATH . $relative;
+    return is_file($file) ? $file : null;
+}
+
+function downloadResume() {
+    $resume = resumeUrl();
+    if ($resume === '') {
+        http_response_code(404);
+        echo 'Resume not found.';
+        exit;
+    }
+
+    $localFile = localPublicFileFromUrl($resume);
+    if ($localFile) {
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="resume.pdf"');
+        header('Content-Length: ' . filesize($localFile));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        readfile($localFile);
+        exit;
+    }
+
+    header('Location: ' . $resume);
+    exit;
 }
 
 function ensureAdminSetup() {
@@ -100,6 +143,55 @@ function ensureAdminSetup() {
     ensureColumnExists('services', 'category', "VARCHAR(100) NOT NULL DEFAULT 'Web' AFTER title");
     ensureColumnExists('services', 'image_url', "VARCHAR(500) NULL AFTER description");
     ensureColumnExists('works', 'category', "VARCHAR(100) NOT NULL DEFAULT 'Web' AFTER title");
+    ensureSiteSettings();
+}
+
+function ensureSiteSettings() {
+    global $db;
+    $db->query("CREATE TABLE IF NOT EXISTS site_settings (
+        setting_key VARCHAR(100) PRIMARY KEY,
+        setting_value LONGTEXT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )");
+
+    $defaults = array_fill_keys([
+        'site_owner_name',
+        'site_name',
+        'site_description',
+        'footer_copyright',
+        'hero_greeting',
+        'hero_title',
+        'hero_description',
+        'hero_profile_image_url',
+        'primary_cta_label',
+        'github_username',
+        'projects_eyebrow',
+        'projects_title',
+        'projects_description',
+        'works_eyebrow',
+        'works_title',
+        'services_eyebrow',
+        'services_title',
+        'services_description',
+        'contact_eyebrow',
+        'contact_title',
+        'contact_description',
+        'about_eyebrow',
+        'about_title',
+        'about_image_url',
+        'about_experience_years',
+        'about_happy_clients',
+        'about_technologies',
+        'about_body',
+        'resume_url',
+    ], '');
+
+    foreach ($defaults as $key => $value) {
+        $stmt = $db->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_key = setting_key");
+        $stmt->bind_param("ss", $key, $value);
+        $stmt->execute();
+        $stmt->close();
+    }
 }
 
 function ensureColumnExists($table, $column, $definition) {
@@ -204,7 +296,136 @@ function boolFromPost($name) {
     return isset($_POST[$name]) ? 1 : 0;
 }
 
-function handleAdminImageUpload($field, $currentValue = '') {
+function getSiteSetting($key, $default = '') {
+    global $db;
+    $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
+    if (!$stmt) {
+        return $default;
+    }
+
+    $stmt->bind_param("s", $key);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : null;
+    $stmt->close();
+
+    return $row && $row['setting_value'] !== null ? $row['setting_value'] : $default;
+}
+
+function getSiteSettings($keys) {
+    $settings = [];
+    foreach ($keys as $key => $default) {
+        $settings[$key] = getSiteSetting($key, $default);
+    }
+    return $settings;
+}
+
+function saveSiteSetting($key, $value) {
+    global $db;
+    $stmt = $db->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+    $stmt->bind_param("ss", $key, $value);
+    $saved = $stmt->execute();
+    $stmt->close();
+    return $saved;
+}
+
+function aboutSettings() {
+    return getSiteSettings([
+        'site_owner_name' => '',
+        'hero_profile_image_url' => '',
+        'primary_cta_label' => '',
+        'github_username' => '',
+        'about_eyebrow' => '',
+        'about_title' => '',
+        'about_image_url' => '',
+        'about_experience_years' => '',
+        'about_happy_clients' => '',
+        'about_technologies' => '',
+        'about_body' => '',
+        'resume_url' => resumeUrl(),
+    ]);
+}
+
+function contentSettings() {
+    return getSiteSettings([
+        'site_owner_name' => '',
+        'site_name' => '',
+        'site_description' => '',
+        'footer_copyright' => '',
+        'hero_greeting' => '',
+        'hero_title' => '',
+        'hero_description' => '',
+        'hero_profile_image_url' => '',
+        'primary_cta_label' => '',
+        'github_username' => '',
+        'projects_eyebrow' => '',
+        'projects_title' => '',
+        'projects_description' => '',
+        'works_eyebrow' => '',
+        'works_title' => '',
+        'services_eyebrow' => '',
+        'services_title' => '',
+        'services_description' => '',
+        'contact_eyebrow' => '',
+        'contact_title' => '',
+        'contact_description' => '',
+    ]);
+}
+
+function settingParagraphs($text) {
+    return array_filter(array_map('trim', preg_split("/\R{2,}/", (string) $text)));
+}
+
+function handleAdminResumeUpload($field, $currentValue = '') {
+    if (empty($_FILES[$field]) || $_FILES[$field]['error'] === UPLOAD_ERR_NO_FILE) {
+        return $currentValue;
+    }
+
+    if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+        setFlash('error', 'Resume upload failed. Please try again.');
+        return false;
+    }
+
+    if ($_FILES[$field]['size'] > 10 * 1024 * 1024) {
+        setFlash('error', 'Resume PDF must be 10MB or smaller.');
+        return false;
+    }
+
+    $tmpPath = $_FILES[$field]['tmp_name'];
+    $mime = function_exists('mime_content_type') ? mime_content_type($tmpPath) : '';
+    $ext = strtolower(pathinfo($_FILES[$field]['name'] ?? '', PATHINFO_EXTENSION));
+
+    $allowedPdfMimes = ['', 'application/pdf', 'application/x-pdf', 'application/octet-stream'];
+    if ($ext !== 'pdf' || !in_array($mime, $allowedPdfMimes, true)) {
+        setFlash('error', 'Only PDF resume uploads are allowed.');
+        return false;
+    }
+
+    $uploadDir = PUBLIC_UPLOADS_PATH . 'resume';
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+        setFlash('error', 'Resume upload folder could not be created.');
+        return false;
+    }
+
+    $filename = 'resume-' . date('YmdHis') . '-' . bin2hex(random_bytes(6)) . '.pdf';
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($tmpPath, $destination)) {
+        setFlash('error', 'Uploaded resume could not be saved.');
+        return false;
+    }
+
+    return PUBLIC_UPLOADS_URL . 'resume/' . $filename;
+}
+
+function uploadSubdirPath($subdir = '') {
+    $subdir = trim((string) $subdir, "/\\");
+    $subdir = preg_replace('/[^a-zA-Z0-9_\/-]/', '', $subdir);
+    $subdir = trim($subdir, "/\\");
+    return $subdir === '' ? '' : $subdir . '/';
+}
+
+function handleAdminImageUpload($field, $currentValue = '', $subdir = '') {
     if (empty($_FILES[$field]) || $_FILES[$field]['error'] === UPLOAD_ERR_NO_FILE) {
         return $currentValue;
     }
@@ -233,7 +454,8 @@ function handleAdminImageUpload($field, $currentValue = '') {
         return false;
     }
 
-    $uploadDir = PUBLIC_UPLOADS_PATH;
+    $subdirPath = uploadSubdirPath($subdir);
+    $uploadDir = PUBLIC_UPLOADS_PATH . $subdirPath;
     if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
         setFlash('error', 'Upload folder could not be created.');
         return false;
@@ -247,7 +469,7 @@ function handleAdminImageUpload($field, $currentValue = '') {
         return false;
     }
 
-    return PUBLIC_UPLOADS_URL . $filename;
+    return PUBLIC_UPLOADS_URL . $subdirPath . $filename;
 }
 
 // Generic asset upload for admin (accepts any file type)
@@ -277,15 +499,8 @@ function handleAdminAssetUpload($field, $currentValue = '', $subdir = null, $nam
         return false;
     }
 
-    // If a valid asset namespace is provided (images, projects, etc.), save under public/assets/<namespace>
-    $namespaces = assetNamespaces();
-    if ($namespace && in_array($namespace, $namespaces, true)) {
-        $uploadDir = PUBLIC_PATH . 'assets/' . trim($namespace, '/');
-        $publicPathPrefix = 'assets/' . trim($namespace, '/');
-    } else {
-        $uploadDir = PUBLIC_PATH . trim($subdir, '/');
-        $publicPathPrefix = trim($subdir, '/');
-    }
+    $uploadDir = PUBLIC_PATH . trim($subdir, '/');
+    $publicPathPrefix = trim($subdir, '/');
     if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
         setFlash('error', 'Upload folder could not be created.');
         return false;
@@ -305,16 +520,8 @@ function handleAdminAssetUpload($field, $currentValue = '', $subdir = null, $nam
 // List files in public subdirectory (e.g., uploads)
 function listAdminAssets($subdir = null, $namespace = null) {
     $subdir = $subdir ?: assetSubdir();
-    $root = dirname(__DIR__);
-
-    $namespaces = assetNamespaces();
-    if ($namespace && in_array($namespace, $namespaces, true)) {
-        $dir = PUBLIC_PATH . 'assets/' . trim($namespace, '/');
-        $urlPrefix = 'assets/' . trim($namespace, '/');
-    } else {
-        $dir = PUBLIC_PATH . trim($subdir, '/');
-        $urlPrefix = trim($subdir, '/');
-    }
+    $dir = PUBLIC_PATH . trim($subdir, '/');
+    $urlPrefix = trim($subdir, '/');
     $files = [];
 
     if (!is_dir($dir)) {
@@ -337,22 +544,11 @@ function listAdminAssets($subdir = null, $namespace = null) {
 function deleteAdminAsset($relativePath, $subdir = null, $namespace = null) {
     $subdir = $subdir ?: assetSubdir();
     $relativePath = ltrim((string) $relativePath, '/');
-    $root = dirname(__DIR__);
 
-    $namespaces = assetNamespaces();
-    if ($namespace && in_array($namespace, $namespaces, true)) {
-        // Support passing just filename
-        if (strpos($relativePath, '/') === false) {
-            $file = PUBLIC_PATH . 'assets/' . trim($namespace, '/') . '/' . $relativePath;
-        } else {
-            $file = PUBLIC_PATH . $relativePath;
-        }
+    if (strpos($relativePath, '/') === false) {
+        $file = PUBLIC_PATH . trim($subdir, '/') . '/' . $relativePath;
     } else {
-        if (strpos($relativePath, '/') === false) {
-            $file = PUBLIC_PATH . trim($subdir, '/') . '/' . $relativePath;
-        } else {
-            $file = PUBLIC_PATH . $relativePath;
-        }
+        $file = PUBLIC_PATH . $relativePath;
     }
 
     if (!file_exists($file) || !is_file($file)) {
@@ -370,7 +566,7 @@ function saveAdminProject() {
     $category = trim($_POST['category'] ?? 'Web');
     $description = trim($_POST['description'] ?? '');
     $image_url = $existing['image_url'] ?? '';
-    $image_url = handleAdminImageUpload('image_file', $image_url);
+    $image_url = handleAdminImageUpload('image_file', $image_url, 'projects');
     if ($image_url === false) {
         return false;
     }
@@ -401,7 +597,7 @@ function saveAdminService() {
     $category = trim($_POST['category'] ?? 'Web');
     $description = trim($_POST['description'] ?? '');
     $image_url = $existing['image_url'] ?? '';
-    $image_url = handleAdminImageUpload('image_file', $image_url);
+    $image_url = handleAdminImageUpload('image_file', $image_url, 'services');
     if ($image_url === false) {
         return false;
     }
@@ -429,7 +625,7 @@ function saveAdminWork() {
     $category = trim($_POST['category'] ?? 'Web');
     $description = trim($_POST['description'] ?? '');
     $image_url = $existing['image_url'] ?? '';
-    $image_url = handleAdminImageUpload('image_file', $image_url);
+    $image_url = handleAdminImageUpload('image_file', $image_url, 'works');
     if ($image_url === false) {
         return false;
     }
@@ -470,6 +666,64 @@ function saveAdminSkill() {
     $saved = $stmt->execute();
     $stmt->close();
     return $saved;
+}
+
+function saveAdminAboutSettings() {
+    $settings = [
+        'site_owner_name' => trim($_POST['site_owner_name'] ?? ''),
+        'site_name' => trim($_POST['site_name'] ?? ''),
+        'site_description' => trim($_POST['site_description'] ?? ''),
+        'footer_copyright' => trim($_POST['footer_copyright'] ?? ''),
+        'hero_greeting' => trim($_POST['hero_greeting'] ?? ''),
+        'hero_title' => trim($_POST['hero_title'] ?? ''),
+        'hero_description' => trim($_POST['hero_description'] ?? ''),
+        'primary_cta_label' => trim($_POST['primary_cta_label'] ?? ''),
+        'github_username' => trim($_POST['github_username'] ?? ''),
+        'projects_eyebrow' => trim($_POST['projects_eyebrow'] ?? ''),
+        'projects_title' => trim($_POST['projects_title'] ?? ''),
+        'projects_description' => trim($_POST['projects_description'] ?? ''),
+        'works_eyebrow' => trim($_POST['works_eyebrow'] ?? ''),
+        'works_title' => trim($_POST['works_title'] ?? ''),
+        'services_eyebrow' => trim($_POST['services_eyebrow'] ?? ''),
+        'services_title' => trim($_POST['services_title'] ?? ''),
+        'services_description' => trim($_POST['services_description'] ?? ''),
+        'contact_eyebrow' => trim($_POST['contact_eyebrow'] ?? ''),
+        'contact_title' => trim($_POST['contact_title'] ?? ''),
+        'contact_description' => trim($_POST['contact_description'] ?? ''),
+        'about_eyebrow' => trim($_POST['about_eyebrow'] ?? ''),
+        'about_title' => trim($_POST['about_title'] ?? ''),
+        'about_experience_years' => trim($_POST['about_experience_years'] ?? ''),
+        'about_happy_clients' => trim($_POST['about_happy_clients'] ?? ''),
+        'about_technologies' => trim($_POST['about_technologies'] ?? ''),
+        'about_body' => trim($_POST['about_body'] ?? ''),
+    ];
+
+    $imageUrl = handleAdminImageUpload('about_image_file', getSiteSetting('about_image_url'), 'about');
+    if ($imageUrl === false) {
+        return false;
+    }
+    $settings['about_image_url'] = $imageUrl;
+
+    $profileImageUrl = handleAdminImageUpload('hero_profile_image_file', getSiteSetting('hero_profile_image_url'), 'profile');
+    if ($profileImageUrl === false) {
+        return false;
+    }
+    $settings['hero_profile_image_url'] = $profileImageUrl;
+
+    $resumeUrl = handleAdminResumeUpload('resume_file', getSiteSetting('resume_url'));
+    if ($resumeUrl === false) {
+        return false;
+    }
+    $manualResumeUrl = trim($_POST['resume_url'] ?? '');
+    $settings['resume_url'] = $manualResumeUrl !== '' ? $manualResumeUrl : $resumeUrl;
+
+    foreach ($settings as $key => $value) {
+        if (!saveSiteSetting($key, $value)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function normalizeCategoryFilter($category) {

@@ -35,12 +35,6 @@ define('APP_BASE_PATH', rtrim(parse_url(SITE_URL, PHP_URL_PATH) ?: '', '/'));
 define('BASE_URL', (APP_BASE_PATH === '' ? '/' : APP_BASE_PATH . '/'));
 
 // Asset URLs
-define('ASSETS_URL', BASE_URL . 'assets/');
-define('IMAGES_URL', ASSETS_URL . 'images/');
-define('PROJECTS_ASSETS_URL', ASSETS_URL . 'projects/');
-define('RESUME_ASSETS_URL', ASSETS_URL . 'resume/');
-define('TECHNOLOGIES_ASSETS_URL', ASSETS_URL . 'technologies/');
-define('WORKS_ASSETS_URL', ASSETS_URL . 'works/');
 define('PUBLIC_URL', BASE_URL . 'public/');
 define('PUBLIC_IMAGES_URL', PUBLIC_URL . 'images/');
 define('PUBLIC_JS_URL', PUBLIC_URL . 'js/');
@@ -48,18 +42,12 @@ define('PUBLIC_UPLOADS_URL', PUBLIC_URL . 'uploads/');
 
 // Asset paths
 define('ROOT_PATH', dirname(__DIR__) . '/');
-define('ASSETS_PATH', ROOT_PATH . 'assets/');
-define('IMAGES_PATH', ASSETS_PATH . 'images/');
-define('PROJECTS_ASSETS_PATH', ASSETS_PATH . 'projects/');
-define('RESUME_ASSETS_PATH', ASSETS_PATH . 'resume/');
-define('TECHNOLOGIES_ASSETS_PATH', ASSETS_PATH . 'technologies/');
-define('WORKS_ASSETS_PATH', ASSETS_PATH . 'works/');
 define('PUBLIC_PATH', ROOT_PATH . 'public/');
 define('PUBLIC_IMAGES_PATH', PUBLIC_PATH . 'images/');
 define('PUBLIC_JS_PATH', PUBLIC_PATH . 'js/');
 define('PUBLIC_UPLOADS_PATH', PUBLIC_PATH . 'uploads/');
 
-define('SITE_NAME', envValue('SITE_NAME', '@synoize - Portfolio'));
+define('SITE_NAME', envValue('SITE_NAME', 'Shivam Singh'));
 define('SITE_DESCRIPTION', envValue('SITE_DESCRIPTION', 'Web & Android Developer from Bihar, India'));
 define('DEVELOPER_EMAIL', envValue('DEVELOPER_EMAIL', 'shivamsingh.dev0@gmail.com'));
 define('DEVELOPER_PHONE', envValue('DEVELOPER_PHONE', '+91 6205163577'));
@@ -67,7 +55,7 @@ define('WHATSAPP_LINK', envValue('WHATSAPP_LINK', 'https://wa.me/916205163577'))
 define('LINKEDIN_LINK', envValue('LINKEDIN_LINK', 'https://linkedin.com/in/synoize'));
 define('GITHUB_LINK', envValue('GITHUB_LINK', 'https://github.com/synoize'));
 define('TWITTER_LINK', envValue('TWITTER_LINK', 'https://twitter.com/synoize'));
-define('RESUME_URL', envValue('RESUME_URL', ));
+define('RESUME_URL', envValue('RESUME_URL', ''));
 
 class Database {
     private $connection;

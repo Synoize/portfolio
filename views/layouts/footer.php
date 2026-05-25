@@ -1,3 +1,4 @@
+<?php $content = contentSettings(); ?>
 <footer class="text-gray-800 py-12">
     <div class="max-w-7xl mx-auto px-6">
 
@@ -5,7 +6,7 @@
         <div class="flex flex-col items-center justify-center text-center">
 
             <!-- Brand -->
-            <img src="<?php echo ASSETS_URL; ?>logo.png" alt="@synoize logo" class="h-8 w-auto object-contain">
+            <img src="<?php echo PUBLIC_IMAGES_URL; ?>logo.png" alt="<?php echo sanitize($content['site_owner_name']); ?>" class="h-8 w-auto object-contain">
 
             <!-- Email -->
             <a href="<?php echo emailUrl(); ?>"
@@ -15,7 +16,7 @@
                     class="w-4 h-4 transition-transform duration-300 group-hover:scale-105">
                 </i>
 
-                shivamsingh.dev1@gmail.com
+                <?php echo sanitize(contactEmail()); ?>
             </a>
         </div>
 
@@ -26,7 +27,7 @@
 
                 <!-- Copyright -->
                 <p class="text-xs md:text-sm text-gray-400 text-center md:text-left">
-                    &copy; 2026 Shivam Singh. All rights reserved.
+                    <?php echo $content['footer_copyright']; ?>
                 </p>
 
                 <!-- Social Links -->

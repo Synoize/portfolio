@@ -2,6 +2,7 @@
 $selectedCategory = normalizeCategoryFilter($_GET['category'] ?? null);
 $categories = getContentCategories('projects');
 $projects = getProjects(null, $selectedCategory);
+$content = contentSettings();
 ?>
 
 <!-- PROJECTS -->
@@ -13,16 +14,15 @@ $projects = getProjects(null, $selectedCategory);
         <div class="text-center mb-16">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                PROJECTS
+                <?php echo sanitize($content['projects_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                Featured Projects
+                <?php echo sanitize($content['projects_title']); ?>
             </h1>
 
             <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8">
-                Open-source, startup and personal projects that reflect
-                my passion for modern web development and innovation.
+                <?php echo nl2br(sanitize($content['projects_description'])); ?>
             </p>
 
         </div>

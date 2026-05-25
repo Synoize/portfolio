@@ -1,6 +1,9 @@
 <?php 
 
-$skills = getSkills(); 
+$skills = getSkills();
+$about = aboutSettings();
+$content = contentSettings();
+$resumeUrl = resumeDownloadUrl();
 
 $selectedCategory = normalizeCategoryFilter($_GET['category'] ?? null);
 $categories = getContentCategories('works');
@@ -22,34 +25,36 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
     <div class="mx-auto max-w-7xl px-4 py-10">
         <div class="text-center max-w-3xl mx-auto">
             <!-- Profile Image -->
-            <div class="mb-8 flex justify-center">
-                <img src="<?php echo IMAGES_URL; ?>profile-img.jpg" alt="Shivam Singh" class="h-40 w-40 rounded-full border-2 border-primary object-cover shadow-lg md:h-48 md:w-48">
-            </div>
+            <?php if (!empty($content['hero_profile_image_url'])): ?>
+                <div class="mb-8 flex justify-center">
+                    <img src="<?php echo sanitize($content['hero_profile_image_url']); ?>" alt="<?php echo sanitize($content['site_owner_name']); ?>" class="h-40 w-40 rounded-full border-2 border-primary object-cover shadow-lg md:h-48 md:w-48">
+                </div>
+            <?php endif; ?>
 
             <!-- Greeting -->
-            <p class="text-lg md:text-xl text-gray-400 mb-4">Hii I'm <span class="text-primary font-semibold">Shivam Singh</span> 👋</p>
+            <p class="text-lg md:text-xl text-gray-400 mb-4"><?php echo sanitize($content['hero_greeting']); ?> <span class="text-primary font-semibold"><?php echo sanitize($content['site_owner_name']); ?></span></p>
 
             <!-- Main Heading -->
             <h1 class="text-3xl md:text-6xl text-gray-800 font-playfair mb-6 leading-tight">
-                Full Stack Web Developer & Product Designer
+                <?php echo sanitize($content['hero_title']); ?>
             </h1>
 
             <!-- Description -->
             <p class="text-sm md:text-base text-gray-500 mb-12">
-                A passionate Web & Android Developer from Bihar, India, with 1+ years of experience building scalable, efficient, and user-focused digital products for startup's.
+                <?php echo sanitize($content['hero_description']); ?>
             </p>
 
             <!-- CTA Buttons -->
             <div class="flex flex-row flex-wrap justify-center gap-4">
                 <a href="<?php echo appUrl('/contact'); ?>"
                     class="group flex h-12 items-center gap-3 border border-primary rounded-full px-8 text-xs transition duration-300 bg-primary text-white hover:bg-opacity-90">
-                    Let's Work Together
+                    <?php echo sanitize($content['primary_cta_label']); ?>
                     <i data-lucide="arrow-right"
                         class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
                     </i>
                 </a>
 
-                <a href="" download="resume.pdf"
+                <a href="<?php echo sanitize($resumeUrl ?: '#'); ?>" <?php echo $resumeUrl ? 'download="resume.pdf"' : ''; ?>
                     class="group flex h-12 items-center gap-3 border border-gray-800 rounded-full px-8 text-xs transition duration-300 text-gray-800 hover:text-white hover:bg-gray-800">
                     DOWNLOAD RESUME
                     <i data-lucide="download"
@@ -69,11 +74,11 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
         <div class="text-center mb-20">
 
             <p class="uppercase tracking-[5px] text-xs md:text-sm text-gray-400 mb-4">
-                Introduction
+                <?php echo sanitize($about['about_eyebrow']); ?>
             </p>
 
             <h2 class="text-3xl md:text-6xl font-playfair text-gray-800 mb-6">
-                About Me
+                <?php echo sanitize($about['about_title']); ?>
             </h2>
 
             <div class="w-24 h-[2px] bg-primary mx-auto"></div>
@@ -88,16 +93,18 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
 
                 <!-- Main Image -->
                 <div class="overflow-hidden rounded-[32px] shadow-2xl group">
-                    <img
-                        src="<?php echo IMAGES_URL; ?>info-img.jpg"
-                        alt="Shivam Singh"
-                        class="w-full min-h-[400px] max-h-[600px] object-cover group-hover:scale-105 transition duration-700">
+                    <?php if (!empty($about['about_image_url'])): ?>
+                        <img
+                            src="<?php echo sanitize($about['about_image_url']); ?>"
+                            alt="<?php echo sanitize($content['site_owner_name']); ?>"
+                            class="w-full min-h-[400px] max-h-[600px] object-cover group-hover:scale-105 transition duration-700">
+                    <?php endif; ?>
                 </div>
 
                 <!-- Floating Experience Card -->
                 <div class="absolute -bottom-8 -right-8 bg-white px-12 py-6 border rounded-3xl shadow-xl border border-gray-100">
                     <h4 class="text-4xl font-bold text-primary mb-1">
-                        1+
+                        <?php echo sanitize($about['about_experience_years']); ?>
                     </h4>
 
                     <p class="text-gray-500 text-sm">
@@ -112,41 +119,11 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
             <!-- Intro -->
             <div class="mt-4 md:mb-4">
 
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    I'm <span class="font-semibold text-primary">Shivam Singh</span>,
-                    a passionate Full Stack Web Developer, Android Developer,
-                    AI Automation Engineer, and Cybersecurity Enthusiast from Bihar, India.
-                    I specialize in creating modern, scalable, and performance-driven
-                    applications that solve real-world business problems.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    With over 2 years of professional experience, I have worked with
-                    multiple startups and companies, helping them build responsive websites,
-                    AI-powered systems, automation tools, and secure backend infrastructures
-                    using modern technologies and industry best practices.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    My expertise includes Full Stack Development, REST APIs,
-                    Database Architecture, Authentication Systems, Cloud Integrations,
-                    and AI workflow automation. I enjoy transforming ideas into
-                    impactful digital products with clean UI/UX and optimized performance.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
-                    Beyond development, I actively explore cybersecurity,
-                    ethical hacking, penetration testing, and network security.
-                    I continuously learn secure coding practices and work with tools
-                    like Kali Linux, Nmap, Burp Suite, and OWASP standards
-                    to build safer applications.
-                </p>
-
-                <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 md:mb-4">
-                    I strongly believe in continuous learning, innovation,
-                    and creating technology that combines design, intelligence,
-                    and functionality to deliver meaningful user experiences.
-                </p>
+                <?php foreach (settingParagraphs($about['about_body']) as $paragraph): ?>
+                    <p class="text-sm leading-[1.8] md:leading-[2] text-gray-700 mb-4">
+                        <?php echo sanitize($paragraph); ?>
+                    </p>
+                <?php endforeach; ?>
 
             </div>
 
@@ -170,7 +147,7 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
 
                 <div class="bg-white border border-gray-100 rounded-3xl p-6 text-center shadow-sm hover:shadow-lg transition duration-300">
                     <h4 class="text-3xl font-bold text-primary mb-2">
-                        30+
+                        <?php echo sanitize($about['about_happy_clients']); ?>
                     </h4>
 
                     <p class="text-gray-500 text-sm">
@@ -180,7 +157,7 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
 
                 <div class="col-span-2 md:col-span-1 bg-white border border-gray-100 rounded-3xl p-6 text-center shadow-sm hover:shadow-lg transition duration-300">
                     <h4 class="text-3xl font-bold text-primary mb-2">
-                        8+
+                        <?php echo sanitize($about['about_technologies']); ?>
                     </h4>
 
                     <p class="text-gray-500 text-sm">
@@ -225,9 +202,11 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
 </section>
 
 <script>
-    const username = "synoize";
+    const username = "<?php echo sanitize($content['github_username']); ?>";
 
     async function loadProjectsCount() {
+
+        if (!username) return;
 
         try {
 
@@ -263,16 +242,15 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
         <div class="text-center mb-16">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                PROJECTS
+                <?php echo sanitize($content['projects_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                Featured Projects
+                <?php echo sanitize($content['projects_title']); ?>
             </h1>
 
             <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8">
-                Open-source, startup and personal projects that reflect
-                my passion for modern web development and innovation.
+                <?php echo nl2br(sanitize($content['projects_description'])); ?>
             </p>
 
         </div>
@@ -502,11 +480,11 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
         <div class="text-center mb-14">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                WORKS
+                <?php echo sanitize($content['works_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                My Clients
+                <?php echo sanitize($content['works_title']); ?>
             </h1>
             
             <div class="mt-6 w-24 h-[2px] bg-primary mx-auto"></div>
@@ -699,16 +677,15 @@ $projects = array_slice(getProjects(null, $selectedCategory), 0, 4);
         <div class="text-center mb-16">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                SERVICES
+                <?php echo sanitize($content['services_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                What I Offer
+                <?php echo sanitize($content['services_title']); ?>
             </h1>
 
             <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8">
-                Modern digital solutions crafted to help startups,
-                businesses and brands grow online.
+                <?php echo nl2br(sanitize($content['services_description'])); ?>
             </p>
 
         </div>

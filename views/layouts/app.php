@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($pageTitle) ? $pageTitle : 'Shivam Singh - Portfolio'; ?></title>
-    <meta name="description" content="<?php echo isset($pageDescription) ? $pageDescription : 'Web & Android Developer | Cyber Enthusiast from Bihar, India'; ?>">
+    <title><?php echo isset($pageTitle) ? sanitize($pageTitle) : sanitize(getSiteSetting('site_name', SITE_NAME)); ?></title>
+    <meta name="description" content="<?php echo isset($pageDescription) ? sanitize($pageDescription) : sanitize(getSiteSetting('site_description', SITE_DESCRIPTION)); ?>">
     <link rel="icon" type="image/png" href="<?php echo PUBLIC_IMAGES_URL; ?>favicon.ico">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

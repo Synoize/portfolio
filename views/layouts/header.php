@@ -1,4 +1,5 @@
 <?php
+$content = contentSettings();
 $navItems = [
     ['path' => '/', 'label' => 'HOME'],
     ['path' => '/about', 'label' => 'ABOUT ME'],
@@ -12,7 +13,7 @@ $navItems = [
     <nav class="mx-auto max-w-7xl px-4 py-5">
         <div class="flex items-center justify-between">
             <a href="<?php echo appUrl('/'); ?>" class="inline-flex items-center">
-                <img src="<?php echo ASSETS_URL; ?>logo.png" alt="Shivam Singh" class="h-8 w-auto object-contain">
+                <img src="<?php echo PUBLIC_IMAGES_URL; ?>logo.png" alt="<?php echo sanitize($content['site_owner_name']); ?>" class="h-8 w-auto object-contain">
             </a>
 
             <div class="hidden h-14 items-center space-x-10 rounded-full border bg-white/80 px-10 text-sm backdrop-blur-md lg:flex">
@@ -26,7 +27,7 @@ $navItems = [
             <div class="hidden lg:block">
                 <a href="<?php echo appUrl('/contact'); ?>"
                     class="group flex h-12 items-center gap-3 border border-primary rounded-full px-8 text-xs transition duration-300 <?php echo isActive('/contact') ? 'bg-primary text-white' : 'hover:bg-primary text-primary hover:text-white'; ?>">
-                    Let's Work Together
+                    <?php echo sanitize($content['primary_cta_label']); ?>
                     <i data-lucide="arrow-right"
                         class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
                     </i>
@@ -49,7 +50,7 @@ $navItems = [
         <!-- HEADER -->
         <div class="flex items-center justify-between border-b px-6 py-5">
             <a href="<?php echo appUrl('/'); ?>" class="inline-flex items-center">
-                <img src="<?php echo ASSETS_URL; ?>logo.png" alt="@synoize logo" class="h-8 w-auto object-contain">
+                <img src="<?php echo PUBLIC_IMAGES_URL; ?>logo.png" alt="<?php echo sanitize($content['site_owner_name']); ?>" class="h-8 w-auto object-contain">
             </a>
 
             <button id="closeBtn"
@@ -81,7 +82,7 @@ $navItems = [
                 ? 'bg-primary text-white'
                 : 'text-primary hover:bg-primary hover:text-white'; ?>">
 
-                Let's Work Together
+                <?php echo sanitize($content['primary_cta_label']); ?>
 
                 <i data-lucide="arrow-right"
                     class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1">

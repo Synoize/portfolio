@@ -1,3 +1,5 @@
+<?php $content = contentSettings(); ?>
+
 <!-- CONTACT -->
 <section class="py-12">
 
@@ -7,17 +9,12 @@
         <div class="text-center mb-20">
 
             <span class="uppercase tracking-[4px] text-[12px] text-gray-500">
-                CONTACT
+                <?php echo sanitize($content['contact_eyebrow']); ?>
             </span>
 
-            <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                Let’s Work Together
-            </h1>
+            <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800"><?php echo sanitize($content['contact_title']); ?></h1>
 
-            <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8">
-                Have a project idea, startup or business requirement?
-                Let’s discuss how we can build something amazing together.
-            </p>
+            <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8"><?php echo nl2br(sanitize($content['contact_description'])); ?></p>
 
         </div>
 
@@ -277,7 +274,7 @@
                                     type="email"
                                     name="email"
                                     required
-                                    placeholder="shivamsingh.dev1@gmail.com"
+                                    placeholder="<?php echo sanitize(contactEmail()); ?>"
                                     class="w-full h-14 rounded-2xl border border-gray-300 px-5 text-sm outline-none transition focus:border-black">
 
                             </div>

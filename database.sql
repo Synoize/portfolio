@@ -1,8 +1,8 @@
 -- Portfolio Database Schema
 
 -- Create Database
-CREATE DATABASE IF NOT EXISTS portfolio_db;
-USE portfolio_db;
+CREATE DATABASE IF NOT EXISTS if0_42013005_portfolio_db;
+USE if0_42013005_portfolio_db;
 
 -- Messages Table (for contact form)
 CREATE TABLE IF NOT EXISTS messages (
@@ -86,6 +86,13 @@ CREATE TABLE IF NOT EXISTS social_links (
     platform VARCHAR(50) NOT NULL,
     url VARCHAR(500) NOT NULL,
     icon_class VARCHAR(100)
+);
+
+-- Site Settings Table
+CREATE TABLE IF NOT EXISTS site_settings (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value LONGTEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Admin Users Table

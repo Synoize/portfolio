@@ -38,17 +38,21 @@ if ($result === '404') {
 } else {
     $currentPage = $result;
     // Set page titles and descriptions
+    $ownerName = getSiteSetting('site_owner_name');
+    $siteName = getSiteSetting('site_name', SITE_NAME);
+    $siteDescription = getSiteSetting('site_description', SITE_DESCRIPTION);
     $pageData = [
-        'landing' => ['Shivam Singh - Portfolio', 'Professional portfolio of Shivam Singh, Web & Android Developer from Bihar, India'],
-        'about' => ['About - Shivam Singh', 'Learn more about Shivam Singh, his experience, and skills'],
-        'services' => ['Services - Shivam Singh', 'Professional web development, Android development, and cybersecurity services'],
-        'my-work' => ['My Work - Shivam Singh', 'Portfolio of completed projects showcasing expertise'],
-        'projects' => ['Projects - Shivam Singh', 'Open-source and personal projects'],
-        'contact' => ['Contact - Shivam Singh', 'Get in touch to discuss your project'],
+        'landing' => [$siteName, $siteDescription],
+        'about' => ['About - ' . $ownerName, 'Learn more about ' . $ownerName],
+        'services' => ['Services - ' . $ownerName, getSiteSetting('services_description', SITE_DESCRIPTION)],
+        'my-work' => ['My Work - ' . $ownerName, 'Portfolio of completed work'],
+        'projects' => ['Projects - ' . $ownerName, getSiteSetting('projects_description', SITE_DESCRIPTION)],
+        'contact' => ['Contact - ' . $ownerName, getSiteSetting('contact_description', 'Get in touch')],
         'admin/login' => ['Admin Login', 'Admin login'],
         'admin/dashboard' => ['Admin Dashboard', 'Manage portfolio website content'],
         'admin/projects' => ['Manage Projects', 'Manage portfolio projects'],
         'admin/services' => ['Manage Services', 'Manage website services'],
+        'admin/about' => ['Manage About', 'Manage about page and resume'],
         'admin/works' => ['Manage Works', 'Manage completed works'],
         'admin/skills' => ['Manage Skills', 'Manage skills'],
         'admin/messages' => ['Messages', 'Manage contact messages'],

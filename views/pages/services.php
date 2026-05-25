@@ -2,6 +2,7 @@
 $selectedCategory = normalizeCategoryFilter($_GET['category'] ?? null);
 $categories = getContentCategories('services');
 $services = getServices($selectedCategory);
+$content = contentSettings();
 ?>
 
 <!-- SERVICES -->
@@ -13,16 +14,15 @@ $services = getServices($selectedCategory);
         <div class="text-center mb-16">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                SERVICES
+                <?php echo sanitize($content['services_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                What I Offer
+                <?php echo sanitize($content['services_title']); ?>
             </h1>
 
             <p class="mt-6 max-w-2xl mx-auto text-gray-500 text-sm md:text-base leading-8">
-                Modern digital solutions crafted to help startups,
-                businesses and brands grow online.
+                <?php echo nl2br(sanitize($content['services_description'])); ?>
             </p>
 
         </div>

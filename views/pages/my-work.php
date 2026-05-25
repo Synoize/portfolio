@@ -2,6 +2,7 @@
 $selectedCategory = normalizeCategoryFilter($_GET['category'] ?? null);
 $categories = getContentCategories('works');
 $works = getWorks(null, $selectedCategory);
+$content = contentSettings();
 ?>
 
 <!-- My WORKS -->
@@ -13,11 +14,11 @@ $works = getWorks(null, $selectedCategory);
         <div class="text-center mb-14">
 
             <span class="uppercase tracking-[4px] text-xs md:text-sm text-gray-500">
-                WORKS
+                <?php echo sanitize($content['works_eyebrow']); ?>
             </span>
 
             <h1 class="mt-3 text-3xl md:text-6xl font-playfair text-gray-800">
-                My Clients
+                <?php echo sanitize($content['works_title']); ?>
             </h1>
             
             <div class="mt-6 w-24 h-[2px] bg-primary mx-auto"></div>

@@ -10,6 +10,9 @@ $router->get('/our-work', function() {
 });
 $router->get('/projects', 'projects');
 $router->get('/contact', 'contact');
+$router->get('/resume-download', function() {
+    downloadResume();
+});
 
 // Admin Routes
 $router->get('/admin/login', 'admin/login');
@@ -57,6 +60,11 @@ $router->get('/admin/services', function() {
     return 'admin/services';
 });
 
+$router->get('/admin/about', function() {
+    requireAdmin();
+    return 'admin/about';
+});
+
 $router->get('/admin/works', function() {
     requireAdmin();
     return 'admin/works';
@@ -86,6 +94,14 @@ $router->post('/admin/services/save', function() {
     $saved = saveAdminService();
     setFlash($saved ? 'success' : 'error', $saved ? 'Service saved.' : 'Service could not be saved.');
     redirectTo('/admin/services');
+});
+
+$router->post('/admin/about/save', function() {
+    requireAdmin();
+    verifyCsrfToken();
+    $saved = saveAdminAboutSettings();
+    setFlash($saved ? 'success' : 'error', $saved ? 'About content saved.' : 'About content could not be saved.');
+    redirectTo('/admin/about');
 });
 
 $router->post('/admin/works/save', function() {
