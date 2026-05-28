@@ -209,6 +209,46 @@
         ?>
     </main>
 
+    <!-- LEFT: Instagram -->
+    <a href="https://instagram.com/synoize" target="_blank" class="fixed bottom-6 left-6 z-50 
+          w-12 h-12 flex items-center justify-center 
+          rounded-xl shadow-lg 
+          bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 
+          hover:scale-110 transition duration-300 animate-float">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+            class="w-12 h-12 rounded-xl shadow-lg hover:scale-110 transition" />
+    </a>
+
+    <!-- RIGHT: WhatsApp -->
+    <a href="https://wa.me/916205163577" target="_blank" class="fixed bottom-6 right-6 z-50 
+          w-12 h-12 flex items-center justify-center 
+          rounded-full shadow-lg 
+          bg-green-500 hover:bg-green-600 
+          hover:scale-110 transition duration-300 animate-float">
+
+        <!-- Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 3.5A11.9 11.9 0 0012.1 0C5.6 0 .3 5.3.3 
+             11.8c0 2.1.5 4.1 1.5 5.9L0 24l6.5-1.7c1.7.9 
+             3.7 1.4 5.6 1.4 6.5 0 11.8-5.3 
+             11.8-11.8 0-3.1-1.2-6-3.9-8.4zM12.1 
+             21c-1.7 0-3.3-.4-4.8-1.2l-.3-.2-3.9 
+             1 1-3.8-.2-.3c-1-1.5-1.5-3.2-1.5-4.9 
+             0-5.4 4.4-9.8 9.8-9.8 2.6 0 5.1 1 
+             6.9 2.9 1.8 1.8 2.9 4.3 2.9 
+             6.9 0 5.4-4.4 9.8-9.8 
+             9.8zm5.4-7.3c-.3-.1-1.7-.8-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 
+             1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1-.2-.3 
+             0-.5.1-.6.1-.1.3-.3.4-.4.1-.2.2-.3.3-.5.1-.2 
+             0-.4 0-.6 0-.1-.7-1.6-1-2.2-.2-.5-.5-.4-.7-.4h-.6c-.2 
+             0-.6.1-.9.4-.3.3-1.2 1.2-1.2 
+             2.8s1.2 3.2 1.4 3.4c.2.3 
+             2.4 3.6 5.9 5 .8.3 1.4.5 
+             1.9.6.8.2 1.6.2 2.2.1.7-.1 
+             1.7-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.3-.2-.6-.3z" />
+        </svg>
+    </a>
+
     <?php include __DIR__ . '/footer.php'; ?>
 
     <script src="<?php echo PUBLIC_JS_URL; ?>script.js"></script>
